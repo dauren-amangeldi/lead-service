@@ -1,0 +1,38 @@
+version: '3'
+services:
+  lead-redirect-service:
+    image: python:3.12-bullseye
+    build: .
+    container_name: lead-redirect-service
+    env_file:
+      - .env
+    environment:
+      - APP_NAME=${APP_NAME}
+      - SH_HOST=${SH_HOST}
+      - SH_PORT=${SH_PORT}
+      - SH_WORKER=${SH_WORKER}
+      - FASTAPI_CONFIG=${FASTAPI_CONFIG}
+    ports:
+      - "${SH_PORT}:${SH_PORT}"
+    entrypoint: ["./start"]
+    networks:
+      - app-network
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: lead-redirect-db
+    ports:
+      - "${POSTGRES_HOST_PORT}:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

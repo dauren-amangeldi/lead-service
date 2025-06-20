@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -o errexit  # Остановка скрипта при ошибке
+set -o pipefail # Остановка скрипта при ошибке в пайпе
+set -o nounset  # Ошибка при использовании необъявленных переменных
+
+# Определяем оптимальное количество воркеров, если переменная SH_WORKER не задана
+DEFAULT_WORKERS=$(expr $(nproc) \* 2 + 1)
+WORKERS=${SH_WORKER:-$DEFAULT_WORKERS}
+
+# Логируем параметры запуска
+echo "Starting FastAPI application with the following parameters:"
+echo "Host: ${SH_HOST:-0.0.0.0}"
+echo "Port: ${SH_PORT:-8000}"
+echo "Workers: $WORKERS"
+
+# Запуск Uvicorn
+exec uvicorn main:app \
+    --host "${SH_HOST:-0.0.0.0}" \
+    --port "${SH_PORT:-8000}" \
+    --workers "$WORKERS"
