@@ -17,6 +17,8 @@ services:
     entrypoint: ["./start"]
     networks:
       - app-network
+    depends_on:
+      - db
     restart: always
 
   db:
